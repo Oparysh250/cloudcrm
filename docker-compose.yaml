@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://crm_user:crm_pass@db:5432/cloudcrm
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    networks:
+      - crm_network
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=crm_user
+      - POSTGRES_PASSWORD=crm_pass
+      - POSTGRES_DB=cloudcrm
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - crm_network
+
+  redis:
+    image: redis:7-alpine
+    networks:
+      - crm_network
+
+  celery_worker:
+    build: .
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    command: celery -A app.celery_app worker --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql://crm_user:crm_pass@db:5432/cloudcrm
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+      - db
+    networks:
+      - crm_network
+
+  celery_beat:
+    build: .
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    command: celery -A app.celery_app beat --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql://crm_user:crm_pass@db:5432/cloudcrm
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+      - db
+    networks:
+      - crm_network
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    depends_on:
+      - web
+    networks:
+      - crm_network
+
+volumes:
+  pgdata:
+
+networks:
+  crm_network:
+    driver: bridge

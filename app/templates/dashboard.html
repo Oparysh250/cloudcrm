@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head><title>CloudCRM - Панель</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"></head>
+<body class="bg-light">
+<nav class="navbar navbar-dark bg-dark px-4">
+    <span class="navbar-brand">CloudCRM</span>
+    <a href="/logout" class="btn btn-outline-light btn-sm">Выйти</a>
+</nav>
+<div class="container mt-4">
+    <h2>Панель управления (Роль: {{ role }})</h2>
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header">Добавить клиента</div>
+                <div class="card-body">
+                    <form method="post" action="/add_client">
+                        <input type="text" name="name" class="form-control mb-2" placeholder="Имя клиента" required>
+                        <button type="submit" class="btn btn-success w-100">Добавить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header">Список клиентов</div>
+                <ul class="list-group list-group-flush">
+                    {% for client in clients %}
+                    <li class="list-group-item">{{ client.name }}</li>
+                    {% else %}
+                    <li class="list-group-item text-muted">Клиентов пока нет</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
