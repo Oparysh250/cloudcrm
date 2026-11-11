@@ -32,5 +32,5 @@ jobs:
         
     - name: Push Docker Image
       run: |
-        docker tag cloudcrm-web:latest ghcr.io/${{ github.repository }}/cloudcrm-web:latest
-        docker push ghcr.io/${{ github.repository }}/cloudcrm-web:latest
+        docker tag cloudcrm-web:latest ghcr.io/oparysh250/cloudcrm/cloudcrm-web:latest
+        docker push ghcr.io/oparysh250/cloudcrm/cloudcrm-web:latest
